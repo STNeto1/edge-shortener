@@ -40,6 +40,7 @@ const Home: NextPage = () => {
 
           <form
             className="flex w-full max-w-lg items-start pt-4"
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={handleSubmit}
           >
             <div className="flex w-full flex-col">
