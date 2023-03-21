@@ -39,7 +39,7 @@ const Home: NextPage = () => {
           <p className="text-gray-400">Edge Shortener</p>
 
           <form
-            className="flex w-full max-w-lg items-start pt-4"
+            className="flex w-full max-w-lg items-start px-2 pt-4"
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={handleSubmit}
           >
@@ -66,33 +66,35 @@ const Home: NextPage = () => {
             </Button>
           </form>
 
-          {createShortUrlMutation.isError && (
-            <>
-              <p className="mt-4 text-red-500">
-                {createShortUrlMutation.error.message}
-              </p>
-            </>
-          )}
+          <section className="w-full max-w-lg">
+            {createShortUrlMutation.isError && (
+              <>
+                <p className="mt-4 text-red-500">
+                  {createShortUrlMutation.error.message}
+                </p>
+              </>
+            )}
 
-          {createShortUrlMutation.isSuccess && (
-            <div className="mt-6 flex items-center justify-between gap-4">
-              <p className="text-gray-200 underline">
-                {createShortUrlMutation.data}
-              </p>
+            {createShortUrlMutation.isSuccess && (
+              <div className="mt-6 flex w-full items-center justify-between gap-4 px-2">
+                <p className="text-gray-200 underline">
+                  {createShortUrlMutation.data}
+                </p>
 
-              <Button
-                size={"sm"}
-                variant={"outline"}
-                onClick={() => {
-                  navigator.clipboard
-                    .writeText(createShortUrlMutation.data)
-                    .catch(console.error);
-                }}
-              >
-                Copy
-              </Button>
-            </div>
-          )}
+                <Button
+                  size={"sm"}
+                  variant={"outline"}
+                  onClick={() => {
+                    navigator.clipboard
+                      .writeText(createShortUrlMutation.data)
+                      .catch(console.error);
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+            )}
+          </section>
         </div>
       </main>
     </>
