@@ -30,3 +30,7 @@ const middleware = async (req: NextRequest, _: NextFetchEvent) => {
 };
 
 export default middleware;
+
+export const config = {
+  matcher: "/((?!_next/image|_next/static|favicon.ico).*)",
+};
