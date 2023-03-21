@@ -1,9 +1,30 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type NextPage } from "next";
 import Head from "next/head";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "~/components/Button";
 import { Input } from "~/components/Input";
+import { api } from "~/utils/api";
+
+const schema = z.object({
+  url: z.string().url().nonempty(),
+});
 
 const Home: NextPage = () => {
+  const createShortUrlMutation = api.link.create.useMutation();
+
+  const createShortUrlForm = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+  });
+  const handleSubmit = createShortUrlForm.handleSubmit(async (data) => {
+    await createShortUrlMutation.mutateAsync(data.url, {
+      onSuccess: () => {
+        createShortUrlForm.reset();
+      },
+    });
+  });
+
   return (
     <>
       <Head>
@@ -17,10 +38,60 @@ const Home: NextPage = () => {
           <h1 className="text-4xl font-bold text-gray-200">Drizzle</h1>
           <p className="text-gray-400">Edge Shortener</p>
 
-          <form className="flex items-center pt-4">
-            <Input placeholder="https://example.com" />
-            <Button type="submit">Shorten</Button>
+          <form
+            className="flex w-full max-w-lg items-start pt-4"
+            onSubmit={handleSubmit}
+          >
+            <div className="flex w-full flex-col">
+              <Input
+                type="text"
+                autoComplete="link"
+                placeholder="https://example.com"
+                {...createShortUrlForm.register("url")}
+                disabled={createShortUrlMutation.isLoading}
+              />
+              <>
+                <p className="mt-1 text-sm text-slate-200" id="email-error">
+                  {createShortUrlForm.formState.errors.url?.message}
+                </p>
+              </>
+            </div>
+            <Button
+              type="submit"
+              className="rounded-r-md"
+              disabled={createShortUrlMutation.isLoading}
+            >
+              Shorten
+            </Button>
           </form>
+
+          {createShortUrlMutation.isError && (
+            <>
+              <p className="mt-4 text-red-500">
+                {createShortUrlMutation.error.message}
+              </p>
+            </>
+          )}
+
+          {createShortUrlMutation.isSuccess && (
+            <div className="mt-6 flex items-center justify-between gap-4">
+              <p className="text-gray-200 underline">
+                {createShortUrlMutation.data}
+              </p>
+
+              <Button
+                size={"sm"}
+                variant={"outline"}
+                onClick={() => {
+                  navigator.clipboard
+                    .writeText(createShortUrlMutation.data)
+                    .catch(console.error);
+                }}
+              >
+                Copy
+              </Button>
+            </div>
+          )}
         </div>
       </main>
     </>
